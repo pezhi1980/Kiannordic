@@ -33,8 +33,7 @@ const year = new Date().getFullYear();
     <link rel="alternate" hreflang="en" href={site + paths.en[page]} />
     <link rel="alternate" hreflang="x-default" href={site + paths.da[page]} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#eef1f2" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f1a20" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#0b0f19" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -54,7 +53,7 @@ const year = new Date().getFullYear();
     <header class="site-header">
       <div class="wrap">
         <a class="brand" href={home} aria-label={company.name}>
-          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 17a9 9 0 0 1 18 0z" fill="currentColor"/><rect x="3" y="18.5" width="26" height="2.2" fill="var(--lingon)"/><rect x="8" y="23" width="16" height="1.6" fill="var(--turq)"/></svg>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="kn-aurora" x1="0" x2="1"><stop offset="0" stop-color="#06b6d4"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs><path d="M7 17a9 9 0 0 1 18 0z" fill="currentColor"/><rect x="3" y="18.5" width="26" height="2.2" rx="1.1" fill="url(#kn-aurora)"/><rect x="8" y="23" width="16" height="1.6" rx=".8" fill="#06b6d4" opacity=".6"/></svg>
           {company.name}
         </a>
         <nav class="nav" aria-label={lang === 'da' ? 'Hovedmenu' : 'Main menu'}>

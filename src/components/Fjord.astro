@@ -23,7 +23,7 @@
     const readColors = () => {
       const s = getComputedStyle(document.documentElement);
       const v = (n: string) => s.getPropertyValue(n).trim();
-      return { lingon: v('--lingon'), turq: v('--turq'), ink: v('--ink') };
+      return { cyan: v('--cyan'), glow: v('--glow'), violet: v('--violet'), mist: v('--mist') };
     };
     let c = readColors();
 
@@ -79,8 +79,8 @@
 
     const drawSky = () => {
       sctx.clearRect(0, 0, sw, sh);
-      sctx.strokeStyle = c.turq;
-      sctx.globalAlpha = 0.55;
+      sctx.strokeStyle = c.cyan;
+      sctx.globalAlpha = 0.42;
       pattern(sctx, sw, sh);
       sctx.globalAlpha = 1;
       fade(sctx, sw, sh, true);
@@ -89,8 +89,8 @@
       mirror.width = w * dpr; mirror.height = h * dpr;
       mctx.setTransform(dpr, 0, 0, -dpr, 0, h * dpr);
       mctx.clearRect(0, 0, w, h);
-      mctx.strokeStyle = c.turq;
-      mctx.globalAlpha = 0.5;
+      mctx.strokeStyle = c.cyan;
+      mctx.globalAlpha = 0.4;
       pattern(mctx, w, h);
       mctx.globalAlpha = 1;
       mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -110,9 +110,14 @@
       }
       wctx.globalAlpha = 1;
 
-      // Horisonten
-      wctx.fillStyle = c.lingon;
+      // Horisonten: nordlysgradient med glød
+      const hg = wctx.createLinearGradient(0, 0, w, 0);
+      hg.addColorStop(0, c.cyan); hg.addColorStop(0.55, c.glow); hg.addColorStop(1, c.violet);
+      wctx.save();
+      wctx.shadowColor = c.glow; wctx.shadowBlur = 14;
+      wctx.fillStyle = hg;
       wctx.fillRect(0, 0, w, 2);
+      wctx.restore();
 
       // Fjordlinjer
       const lines = 22;
@@ -122,9 +127,9 @@
         const y = 6 + Math.pow(k, 1.6) * (h - 10);
         const amp = 1.2 + k * 7;
         const freq = 0.006 + (1 - k) * 0.01;
-        wctx.globalAlpha = 0.8 - k * 0.6;
-        wctx.strokeStyle = i % 7 === 0 ? c.turq : c.ink;
-        wctx.lineWidth = i % 7 === 0 ? 1.6 : 1;
+        wctx.globalAlpha = 0.55 - k * 0.4;
+        wctx.strokeStyle = i % 7 === 0 ? c.cyan : i % 7 === 4 ? c.violet : c.mist;
+        wctx.lineWidth = i % 7 === 0 || i % 7 === 4 ? 1.5 : 1;
         wctx.beginPath();
         for (let x = 0; x <= w + step; x += step) {
           const d = x / w - px;
@@ -167,7 +172,6 @@
     window.addEventListener('pointermove', (e) => { tx = e.clientX / window.innerWidth; }, { passive: true });
     window.addEventListener('resize', resize);
     reduce.addEventListener('change', start);
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { c = readColors(); resize(); });
 
     new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;

@@ -22,22 +22,24 @@ const t = content[lang];
   </section>
 
   <section class="block" id="ydelser" aria-labelledby="ydelser-h">
-    <div class="wrap split">
+    <div class="wrap">
       <h2 id="ydelser-h">{t.services.title}</h2>
-      <ul class="rows">
-        {t.services.items.map((s) => (
-          <li>
+      <ul class="cards">
+        {t.services.items.map((s, i) => (
+          <li class="card">
+            <span class="icon" aria-hidden="true">
+              {i === 0 && <svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 8.5l1 2.2 2.2 1-2.2 1-1 2.2-1-2.2-2.2-1 2.2-1z"/></svg>}
+              {i === 1 && <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><circle cx="12" cy="12.5" r="2.4"/><path d="M12 7v3.1M10.1 14l-3.6 2.6M13.9 14l3.6 2.6"/></svg>}
+              {i === 2 && <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><path d="M17.25 13.5v7.5M13.5 17.25H21"/></svg>}
+            </span>
             <h3>{s.name}</h3>
-            <div>
-              <p>{s.text}</p>
-              <ul class="tags">{s.tags.map((tag) => <li>{tag}</li>)}</ul>
-            </div>
+            <p>{s.text}</p>
+            <ul class="tags">{s.tags.map((tag) => <li>{tag}</li>)}</ul>
           </li>
         ))}
       </ul>
     </div>
   </section>
-
 
   <section class="block" id="proces" aria-labelledby="proces-h">
     <div class="wrap">
@@ -68,7 +70,7 @@ const t = content[lang];
   </section>
 
   <section class="block contact" id="kontakt" aria-labelledby="kontakt-h">
-    <div class="wrap split">
+    <div class="wrap"><div class="panel split">
       <div>
         <h2 id="kontakt-h">{t.contact.title}</h2>
         <p class="intro">{t.contact.lead}</p>
@@ -90,7 +92,7 @@ const t = content[lang];
         <p class="note">{t.contact.note}</p>
         <p class="direct">{t.contact.or} <a href={`mailto:${company.email}`}>{company.email}</a></p>
       </form>
-    </div>
+    </div></div>
   </section>
 </Base>
 
