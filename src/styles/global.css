@@ -5,10 +5,10 @@
   --paper-2: #e2e8ea;
   --ink: #13222b;        /* dyb fjord */
   --ink-soft: #4a5a63;
-  --pine: #1f4d45;       /* fyrretræ */
+  --turq: #1a7f86;       /* persisk turkis (firuzeh) */
   --lingon: #c2334a;     /* tyttebær, eneste accent */
   --line: #c9d2d6;
-  --focus: #1f4d45;
+  --focus: #1a7f86;
   --measure: 62ch;
   --wrap: 1120px;
   --gutter: clamp(16px, 4vw, 40px);
@@ -21,10 +21,10 @@
     --paper-2: #16242c;
     --ink: #e6ecee;
     --ink-soft: #9fb0b8;
-    --pine: #7fb3a6;
+    --turq: #5ec4c8;
     --lingon: #e0576c;
     --line: #2a3a43;
-    --focus: #7fb3a6;
+    --focus: #5ec4c8;
     color-scheme: dark;
   }
 }
@@ -79,11 +79,14 @@ a { color: inherit; }
 .actions { display: flex; flex-wrap: wrap; gap: .8rem; }
 .btn { display: inline-flex; align-items: center; min-height: 48px; padding: 0 1.4rem; border-radius: 999px; font-weight: 600; text-decoration: none; border: 1.5px solid var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
 .btn-primary { background: var(--ink); color: var(--paper); }
-.btn-primary:hover { background: var(--pine); border-color: var(--pine); }
+.btn-primary:hover { background: var(--turq); border-color: var(--turq); }
 .btn-ghost { background: transparent; color: var(--ink); }
 .btn-ghost:hover { background: var(--paper-2); }
 
-.fjord { display: block; width: 100%; height: clamp(180px, 30vh, 320px); margin-top: clamp(3rem, 8vh, 5rem); }
+.hero { --fjord-h: clamp(180px, 30vh, 320px); }
+.hero > .wrap { position: relative; z-index: 1; }
+.sky { position: absolute; top: 0; left: 0; right: 0; bottom: var(--fjord-h); width: 100%; height: calc(100% - var(--fjord-h)); display: block; pointer-events: none; }
+.fjord { position: relative; display: block; width: 100%; height: var(--fjord-h); margin-top: clamp(3rem, 8vh, 5rem); }
 
 /* Sections */
 section.block { padding: clamp(4rem, 10vh, 7rem) 0; border-top: 1px solid var(--line); }
@@ -105,7 +108,7 @@ section.block { padding: clamp(4rem, 10vh, 7rem) 0; border-top: 1px solid var(--
 /* Process: a real sequence, so numbered */
 .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(1rem, 3vw, 2rem); list-style: none; margin: 0; padding: 0; counter-reset: step; margin-top: 2.5rem; }
 .steps li { counter-increment: step; position: relative; padding-top: 3.2rem; }
-.steps li::before { content: counter(step); position: absolute; top: 0; left: 0; font-size: 2.4rem; font-weight: 800; line-height: 1; color: var(--pine); letter-spacing: -0.04em; }
+.steps li::before { content: counter(step); position: absolute; top: 0; left: 0; font-size: 2.4rem; font-weight: 800; line-height: 1; color: var(--turq); letter-spacing: -0.04em; }
 .steps li::after { content: ''; position: absolute; top: 1.15rem; left: 2.6rem; right: 0; height: 1px; background: var(--line); }
 .steps li:last-child::after { background: var(--lingon); }
 .steps h3 { margin: 0 0 .4rem; font-size: 1.15rem; }

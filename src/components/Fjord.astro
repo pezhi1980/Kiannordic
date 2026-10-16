@@ -1,37 +1,120 @@
 ---
-// Signaturelementet: en horisont (tyttebær) over et fjordspejl af linjer,
-// der bølger roligt og følger markøren. Statisk ved reduced motion.
+// Signaturelementet: to verdener mødes i horisonten.
+// Over horisonten: et persisk geometrisk mønster (ottetakket stjerne, khatam).
+// Under horisonten: nordisk fjordvand, hvor mønstret spejler sig i bølgerne.
+// Statisk ved prefers-reduced-motion.
 ---
+<canvas class="sky" aria-hidden="true"></canvas>
 <canvas class="fjord" aria-hidden="true"></canvas>
 
 <script>
-  const canvas = document.querySelector<HTMLCanvasElement>('canvas.fjord');
-  if (canvas) {
-    const ctx = canvas.getContext('2d')!;
+  const sky = document.querySelector<HTMLCanvasElement>('canvas.sky');
+  const water = document.querySelector<HTMLCanvasElement>('canvas.fjord');
+
+  if (sky && water) {
+    const sctx = sky.getContext('2d')!;
+    const wctx = water.getContext('2d')!;
+    const mirror = document.createElement('canvas');
+    const mctx = mirror.getContext('2d')!;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let w = 0, h = 0, dpr = 1, raf = 0, t = 0;
-    let px = 0.5, tx = 0.5;
+    let dpr = 1, sw = 0, sh = 0, w = 0, h = 0, raf = 0, t = 0;
+    let px = 0.6, tx = 0.6;
 
-    const colors = () => {
+    const readColors = () => {
       const s = getComputedStyle(document.documentElement);
-      return { lingon: s.getPropertyValue('--lingon').trim(), pine: s.getPropertyValue('--pine').trim(), ink: s.getPropertyValue('--ink').trim() };
+      const v = (n: string) => s.getPropertyValue(n).trim();
+      return { lingon: v('--lingon'), turq: v('--turq'), ink: v('--ink') };
     };
-    let c = colors();
+    let c = readColors();
 
-    const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = canvas.clientWidth; h = canvas.clientHeight;
-      canvas.width = w * dpr; canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      draw();
+    // Ottetakket stjerne (khatam) med indre ottekant
+    const star = (ctx: CanvasRenderingContext2D, x: number, y: number, R: number) => {
+      const r = R * 0.62;
+      for (let k = 0; k <= 16; k++) {
+        const a = (k * Math.PI) / 8 - Math.PI / 2;
+        const rr = k % 2 === 0 ? R : r;
+        const px = x + rr * Math.cos(a), py = y + rr * Math.sin(a);
+        k === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      const o = r * 0.55;
+      for (let k = 0; k <= 8; k++) {
+        const a = (k * Math.PI) / 4 + Math.PI / 8;
+        const px = x + o * Math.cos(a), py = y + o * Math.sin(a);
+        k === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
     };
 
-    const draw = () => {
-      ctx.clearRect(0, 0, w, h);
+    // Stjerner forbundet spids til spids; bunden af mønstret flugter med horisonten
+    const pattern = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+      const s = Math.max(60, Math.min(92, width / 13));
+      const R = s * 0.36;
+      ctx.beginPath();
+      for (let y = height; y > -s; y -= s) {
+        for (let x = -s; x < width + s; x += s) {
+          star(ctx, x, y, R);
+          ctx.moveTo(x + R, y); ctx.lineTo(x + s - R, y);
+          ctx.moveTo(x, y - R); ctx.lineTo(x, y - s + R);
+        }
+      }
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    };
+
+    // Fade: usynligt til venstre (bag teksten), stærkest til højre og nær horisonten
+    const fade = (ctx: CanvasRenderingContext2D, width: number, height: number, towardsTop: boolean) => {
+      ctx.globalCompositeOperation = 'destination-in';
+      const gx = ctx.createLinearGradient(0, 0, width, 0);
+      const narrow = width < 720;
+      gx.addColorStop(0, 'rgba(0,0,0,0)');
+      gx.addColorStop(narrow ? 0 : 0.42, 'rgba(0,0,0,0)');
+      gx.addColorStop(narrow ? 0.6 : 0.8, 'rgba(0,0,0,1)');
+      gx.addColorStop(1, 'rgba(0,0,0,1)');
+      ctx.fillStyle = gx; ctx.fillRect(0, 0, width, height);
+      const gy = towardsTop ? ctx.createLinearGradient(0, height, 0, 0) : ctx.createLinearGradient(0, 0, 0, height);
+      gy.addColorStop(0, 'rgba(0,0,0,1)');
+      gy.addColorStop(towardsTop ? (narrow ? 0.4 : 0.8) : 0.85, 'rgba(0,0,0,0)');
+      ctx.fillStyle = gy; ctx.fillRect(0, 0, width, height);
+      ctx.globalCompositeOperation = 'source-over';
+    };
+
+    const drawSky = () => {
+      sctx.clearRect(0, 0, sw, sh);
+      sctx.strokeStyle = c.turq;
+      sctx.globalAlpha = 0.55;
+      pattern(sctx, sw, sh);
+      sctx.globalAlpha = 1;
+      fade(sctx, sw, sh, true);
+
+      // Spejlbillede af mønstret til vandet (lodret vendt)
+      mirror.width = w * dpr; mirror.height = h * dpr;
+      mctx.setTransform(dpr, 0, 0, -dpr, 0, h * dpr);
+      mctx.clearRect(0, 0, w, h);
+      mctx.strokeStyle = c.turq;
+      mctx.globalAlpha = 0.5;
+      pattern(mctx, w, h);
+      mctx.globalAlpha = 1;
+      mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      fade(mctx, w, h, false);
+    };
+
+    const drawWater = () => {
+      wctx.clearRect(0, 0, w, h);
+
+      // Refleksionen: skiver af spejlbilledet forskudt af bølger
+      const band = 3;
+      for (let y = 4; y < h; y += band) {
+        const k = y / h;
+        const dx = Math.sin(y * 0.09 + t * 1.4) * (1 + k * 9) + Math.sin(y * 0.031 - t * 0.7) * k * 6;
+        wctx.globalAlpha = 0.9 - k * 0.5;
+        wctx.drawImage(mirror, 0, y * dpr, w * dpr, band * dpr, dx, y, w, band);
+      }
+      wctx.globalAlpha = 1;
+
       // Horisonten
-      ctx.fillStyle = c.lingon;
-      ctx.fillRect(0, 0, w, 2);
-      // Spejlingslinjer: tættere tæt på horisonten, længere mellemrum nedad
+      wctx.fillStyle = c.lingon;
+      wctx.fillRect(0, 0, w, 2);
+
+      // Fjordlinjer
       const lines = 22;
       const step = Math.max(6, w / 140);
       for (let i = 1; i <= lines; i++) {
@@ -39,39 +122,57 @@
         const y = 6 + Math.pow(k, 1.6) * (h - 10);
         const amp = 1.2 + k * 7;
         const freq = 0.006 + (1 - k) * 0.01;
-        ctx.globalAlpha = 0.85 - k * 0.6;
-        ctx.strokeStyle = i % 7 === 0 ? c.pine : c.ink;
-        ctx.lineWidth = i % 7 === 0 ? 1.6 : 1;
-        ctx.beginPath();
+        wctx.globalAlpha = 0.8 - k * 0.6;
+        wctx.strokeStyle = i % 7 === 0 ? c.turq : c.ink;
+        wctx.lineWidth = i % 7 === 0 ? 1.6 : 1;
+        wctx.beginPath();
         for (let x = 0; x <= w + step; x += step) {
-          const d = (x / w - px);
+          const d = x / w - px;
           const swell = Math.exp(-d * d * 18) * (4 + k * 10);
-          const yy = y + Math.sin(x * freq + t * (0.6 + k) + i) * amp * 0.5 + Math.sin(x * freq * 0.37 - t * 0.4 + i * 2) * amp * 0.5 - swell * Math.cos(d * 9 - t);
-          x === 0 ? ctx.moveTo(x, yy) : ctx.lineTo(x, yy);
+          const yy = y + Math.sin(x * freq + t * (0.6 + k) + i) * amp * 0.5
+                       + Math.sin(x * freq * 0.37 - t * 0.4 + i * 2) * amp * 0.5
+                       - swell * Math.cos(d * 9 - t);
+          x === 0 ? wctx.moveTo(x, yy) : wctx.lineTo(x, yy);
         }
-        ctx.stroke();
+        wctx.stroke();
       }
-      ctx.globalAlpha = 1;
+      wctx.globalAlpha = 1;
+    };
+
+    const resize = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      sw = sky.clientWidth; sh = sky.clientHeight;
+      w = water.clientWidth; h = water.clientHeight;
+      sky.width = sw * dpr; sky.height = sh * dpr;
+      water.width = w * dpr; water.height = h * dpr;
+      sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      wctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      drawSky();
+      drawWater();
     };
 
     const loop = () => {
       t += 0.012;
       px += (tx - px) * 0.04;
-      draw();
+      drawWater();
       raf = requestAnimationFrame(loop);
     };
 
-    const start = () => { cancelAnimationFrame(raf); if (!reduce.matches) loop(); else draw(); };
+    let visible = true;
+    const start = () => {
+      cancelAnimationFrame(raf);
+      if (!reduce.matches && visible) loop(); else drawWater();
+    };
 
     window.addEventListener('pointermove', (e) => { tx = e.clientX / window.innerWidth; }, { passive: true });
     window.addEventListener('resize', resize);
     reduce.addEventListener('change', start);
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { c = colors(); draw(); });
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { c = readColors(); resize(); });
 
-    // Kun animér, når fjorden er synlig
     new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) start(); else cancelAnimationFrame(raf);
-    }).observe(canvas);
+      visible = entry.isIntersecting;
+      start();
+    }).observe(water);
 
     resize();
   }
