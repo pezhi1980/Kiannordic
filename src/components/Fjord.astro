@@ -1,0 +1,78 @@
+---
+// Signaturelementet: en horisont (tyttebær) over et fjordspejl af linjer,
+// der bølger roligt og følger markøren. Statisk ved reduced motion.
+---
+<canvas class="fjord" aria-hidden="true"></canvas>
+
+<script>
+  const canvas = document.querySelector<HTMLCanvasElement>('canvas.fjord');
+  if (canvas) {
+    const ctx = canvas.getContext('2d')!;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let w = 0, h = 0, dpr = 1, raf = 0, t = 0;
+    let px = 0.5, tx = 0.5;
+
+    const colors = () => {
+      const s = getComputedStyle(document.documentElement);
+      return { lingon: s.getPropertyValue('--lingon').trim(), pine: s.getPropertyValue('--pine').trim(), ink: s.getPropertyValue('--ink').trim() };
+    };
+    let c = colors();
+
+    const resize = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw();
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      // Horisonten
+      ctx.fillStyle = c.lingon;
+      ctx.fillRect(0, 0, w, 2);
+      // Spejlingslinjer: tættere tæt på horisonten, længere mellemrum nedad
+      const lines = 22;
+      const step = Math.max(6, w / 140);
+      for (let i = 1; i <= lines; i++) {
+        const k = i / lines;
+        const y = 6 + Math.pow(k, 1.6) * (h - 10);
+        const amp = 1.2 + k * 7;
+        const freq = 0.006 + (1 - k) * 0.01;
+        ctx.globalAlpha = 0.85 - k * 0.6;
+        ctx.strokeStyle = i % 7 === 0 ? c.pine : c.ink;
+        ctx.lineWidth = i % 7 === 0 ? 1.6 : 1;
+        ctx.beginPath();
+        for (let x = 0; x <= w + step; x += step) {
+          const d = (x / w - px);
+          const swell = Math.exp(-d * d * 18) * (4 + k * 10);
+          const yy = y + Math.sin(x * freq + t * (0.6 + k) + i) * amp * 0.5 + Math.sin(x * freq * 0.37 - t * 0.4 + i * 2) * amp * 0.5 - swell * Math.cos(d * 9 - t);
+          x === 0 ? ctx.moveTo(x, yy) : ctx.lineTo(x, yy);
+        }
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    const loop = () => {
+      t += 0.012;
+      px += (tx - px) * 0.04;
+      draw();
+      raf = requestAnimationFrame(loop);
+    };
+
+    const start = () => { cancelAnimationFrame(raf); if (!reduce.matches) loop(); else draw(); };
+
+    window.addEventListener('pointermove', (e) => { tx = e.clientX / window.innerWidth; }, { passive: true });
+    window.addEventListener('resize', resize);
+    reduce.addEventListener('change', start);
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { c = colors(); draw(); });
+
+    // Kun animér, når fjorden er synlig
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) start(); else cancelAnimationFrame(raf);
+    }).observe(canvas);
+
+    resize();
+  }
+</script>

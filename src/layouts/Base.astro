@@ -1,0 +1,89 @@
+---
+import '../styles/global.css';
+import { content, paths, type Lang } from '../i18n/content';
+import { company } from '../config';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  page: 'home' | 'privacy';
+}
+
+const { lang, page } = Astro.props;
+const t = content[lang];
+const other: Lang = lang === 'da' ? 'en' : 'da';
+const title = Astro.props.title ?? t.meta.title;
+const description = Astro.props.description ?? t.meta.description;
+const site = Astro.site!.toString().replace(/\/$/, '');
+const canonical = site + paths[lang][page];
+const home = paths[lang].home;
+const anchor = (id: string) => (page === 'home' ? `#${id}` : `${home}#${id}`);
+const year = new Date().getFullYear();
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="da" href={site + paths.da[page]} />
+    <link rel="alternate" hreflang="en" href={site + paths.en[page]} />
+    <link rel="alternate" hreflang="x-default" href={site + paths.da[page]} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#eef1f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1a20" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === 'da' ? 'da_DK' : 'en_GB'} />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: company.name,
+      url: site,
+      email: company.email,
+      address: { '@type': 'PostalAddress', addressCountry: 'DK' },
+    })} />
+  </head>
+  <body>
+    <a class="skip" href="#main">{lang === 'da' ? 'Spring til indhold' : 'Skip to content'}</a>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href={home} aria-label={company.name}>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 17a9 9 0 0 1 18 0z" fill="currentColor"/><rect x="3" y="18.5" width="26" height="2.2" fill="var(--lingon)"/><rect x="8" y="23" width="16" height="1.6" fill="var(--pine)"/></svg>
+          {company.name}
+        </a>
+        <nav class="nav" aria-label={lang === 'da' ? 'Hovedmenu' : 'Main menu'}>
+          <a class="section-link" href={anchor('ydelser')}>{t.nav.services}</a>
+          <a class="section-link" href={anchor('projekter')}>{t.nav.projects}</a>
+          <a class="section-link" href={anchor('proces')}>{t.nav.process}</a>
+          <a class="section-link" href={anchor('kontakt')}>{t.nav.contact}</a>
+          <a class="lang" href={paths[other][page]} hreflang={other} lang={other} aria-label={t.nav.switchLabel}>{t.nav.switchShort}</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>© {year} {company.name}, {company.country[lang]}</span>
+        <ul>
+          {company.cvr && <li>{t.footer.cvr} {company.cvr}</li>}
+          <li><a href={`mailto:${company.email}`}>{company.email}</a></li>
+          <li><a href={paths[lang].privacy}>{t.footer.privacy}</a></li>
+        </ul>
+      </div>
+    </footer>
+    <script>
+      const header = document.querySelector('.site-header');
+      const onScroll = () => header?.classList.toggle('scrolled', window.scrollY > 8);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,123 @@
+---
+import Base from '../layouts/Base.astro';
+import Fjord from './Fjord.astro';
+import { content, type Lang } from '../i18n/content';
+import { company } from '../config';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = content[lang];
+---
+<Base lang={lang} page="home">
+  <section class="hero">
+    <div class="wrap">
+      <h1>{t.hero.title}</h1>
+      <p class="lead">{t.hero.lead}</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#kontakt">{t.hero.primary}</a>
+        <a class="btn btn-ghost" href="#projekter">{t.hero.secondary}</a>
+      </div>
+    </div>
+    <Fjord />
+  </section>
+
+  <section class="block" id="ydelser" aria-labelledby="ydelser-h">
+    <div class="wrap split">
+      <h2 id="ydelser-h">{t.services.title}</h2>
+      <ul class="rows">
+        {t.services.items.map((s) => (
+          <li>
+            <h3>{s.name}</h3>
+            <div>
+              <p>{s.text}</p>
+              <ul class="tags">{s.tags.map((tag) => <li>{tag}</li>)}</ul>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" id="projekter" aria-labelledby="projekter-h">
+    <div class="wrap">
+      <h2 id="projekter-h">{t.projects.title}</h2>
+      <p class="intro">{t.projects.lead}</p>
+      <ul class="projects">
+        {t.projects.items.map((p) => (
+          <li>
+            <div class="head">
+              <h3>{p.name}</h3>
+              <span class="status">{p.status}</span>
+            </div>
+            <p>{p.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" id="proces" aria-labelledby="proces-h">
+    <div class="wrap">
+      <h2 id="proces-h">{t.process.title}</h2>
+      <ol class="steps">
+        {t.process.steps.map((s) => (
+          <li>
+            <h3>{s.name}</h3>
+            <p>{s.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="why-h">
+    <div class="wrap split">
+      <h2 id="why-h">{t.why.title}</h2>
+      <dl class="why">
+        {t.why.items.map((w) => (
+          <div>
+            <dt>{w.name}</dt>
+            <dd>{w.text}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="block contact" id="kontakt" aria-labelledby="kontakt-h">
+    <div class="wrap split">
+      <div>
+        <h2 id="kontakt-h">{t.contact.title}</h2>
+        <p class="intro">{t.contact.lead}</p>
+      </div>
+      <form class="mailform" data-email={company.email} data-subject={t.contact.subject}>
+        <div class="field">
+          <label for="f-name">{t.contact.name}</label>
+          <input id="f-name" name="name" autocomplete="name" required />
+        </div>
+        <div class="field">
+          <label for="f-email">{t.contact.email}</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" required />
+        </div>
+        <div class="field">
+          <label for="f-msg">{t.contact.message}</label>
+          <textarea id="f-msg" name="message" required></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit">{t.contact.submit}</button>
+        <p class="note">{t.contact.note}</p>
+        <p class="direct">{t.contact.or} <a href={`mailto:${company.email}`}>{company.email}</a></p>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('form.mailform');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const d = new FormData(form);
+    const body = `${d.get('message')}\n\n— ${d.get('name')} <${d.get('email')}>`;
+    const href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(form.dataset.subject || '')}&body=${encodeURIComponent(body)}`;
+    window.location.href = href;
+  });
+</script>
