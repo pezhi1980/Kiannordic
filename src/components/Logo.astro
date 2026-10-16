@@ -1,0 +1,39 @@
+---
+// Logotype: et uendeligt, kontinuerligt loop (læringscyklus) + "kian" (rund, kraftig) + "nordic" (smal, formel).
+// En lysende puls løber hele tiden rundt i loopet: modeller, der bliver ved med at lære.
+interface Props { id?: string; size?: 'sm' | 'lg' }
+const { id = 'logo', size = 'sm' } = Astro.props;
+const loop = 'M12 12c-2.5-3-4.5-4.5-6.5-4.5a4.5 4.5 0 0 0 0 9c2 0 4-1.5 6.5-4.5s4.5-4.5 6.5-4.5a4.5 4.5 0 0 1 0 9c-2 0-4-1.5-6.5-4.5z';
+---
+<span class:list={['logo', `logo-${size}`]}>
+  <svg class="loop" viewBox="0 0 24 24" aria-hidden="true">
+    <defs>
+      <linearGradient id={`${id}-g`} x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#06b6d4" />
+        <stop offset="1" stop-color="#6366f1" />
+      </linearGradient>
+    </defs>
+    <path d={loop} class="loop-base" stroke={`url(#${id}-g)`} />
+    <path d={loop} class="loop-pulse" pathLength="100" />
+  </svg>
+  <span class="wordmark"><span class="kian">kian</span><span class="nordic">nordic</span></span>
+</span>
+
+<style>
+  .logo { display: inline-flex; align-items: center; gap: .5em; line-height: 1; color: var(--glacier); }
+  .loop { width: 1.9em; height: 1.9em; overflow: visible; }
+  .loop path { fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .loop-pulse {
+    stroke: var(--glow);
+    stroke-dasharray: 14 86;
+    filter: drop-shadow(0 0 1.6px var(--glow));
+    animation: kn-loop 3.2s linear infinite;
+  }
+  @keyframes kn-loop { to { stroke-dashoffset: -100; } }
+  @media (prefers-reduced-motion: reduce) { .loop-pulse { animation: none; stroke-dashoffset: -20; } }
+
+  .wordmark { display: inline-flex; align-items: baseline; gap: .12em; }
+  .kian { font-family: 'Nunito Variable', 'Schibsted Grotesk Variable', sans-serif; font-weight: 800; font-size: 1.2em; letter-spacing: -0.02em; }
+  .nordic { font-family: 'Schibsted Grotesk Variable', sans-serif; font-weight: 380; font-size: .98em; letter-spacing: .14em; color: var(--mist); }
+  .logo-lg { font-size: clamp(1.4rem, 3vw, 2rem); }
+</style>

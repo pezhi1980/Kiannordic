@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Fjord from './Fjord.astro';
+import AIDemo from './AIDemo.astro';
 import { content, type Lang } from '../i18n/content';
 import { company } from '../config';
 
@@ -10,27 +11,33 @@ const t = content[lang];
 ---
 <Base lang={lang} page="home">
   <section class="hero">
-    <div class="wrap">
-      <h1>{t.hero.title}</h1>
-      <p class="lead">{t.hero.lead}</p>
-      <div class="actions">
-        <a class="btn btn-primary" href="#kontakt">{t.hero.primary}</a>
-        <a class="btn btn-ghost" href="#ydelser">{t.hero.secondary}</a>
+    <div class="mesh" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1>{t.hero.title}</h1>
+        <p class="lead">{t.hero.lead}</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#kontakt">{t.hero.primary}</a>
+          <a class="btn btn-ghost" href="#ydelser">{t.hero.secondary}</a>
+        </div>
       </div>
+      <AIDemo lang={lang} />
     </div>
     <Fjord />
   </section>
 
-  <section class="block" id="ydelser" aria-labelledby="ydelser-h">
+  <section class="block services" id="ydelser" aria-labelledby="ydelser-h">
+    <div class="mesh mesh-soft" aria-hidden="true"><span class="blob b2"></span><span class="blob b3"></span></div>
     <div class="wrap">
       <h2 id="ydelser-h">{t.services.title}</h2>
       <ul class="cards">
-        {t.services.items.map((s, i) => (
-          <li class="card">
+        {t.services.items.map((s) => (
+          <li class="card glass">
             <span class="icon" aria-hidden="true">
-              {i === 0 && <svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 8.5l1 2.2 2.2 1-2.2 1-1 2.2-1-2.2-2.2-1 2.2-1z"/></svg>}
-              {i === 1 && <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><circle cx="12" cy="12.5" r="2.4"/><path d="M12 7v3.1M10.1 14l-3.6 2.6M13.9 14l3.6 2.6"/></svg>}
-              {i === 2 && <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><path d="M17.25 13.5v7.5M13.5 17.25H21"/></svg>}
+              {s.icon === 'app' && <svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 8.5l1 2.2 2.2 1-2.2 1-1 2.2-1-2.2-2.2-1 2.2-1z"/></svg>}
+              {s.icon === 'llm' && <svg viewBox="0 0 24 24"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>}
+              {s.icon === 'vision' && <svg viewBox="0 0 24 24"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M3 3.5h3M3 3.5v3M21 3.5h-3M21 3.5v3M3 20.5h3M3 20.5v-3M21 20.5h-3M21 20.5v-3"/></svg>}
+              {s.icon === 'agent' && <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><circle cx="12" cy="12.5" r="2.4"/><path d="M12 7v3.1M10.1 14l-3.6 2.6M13.9 14l3.6 2.6"/></svg>}
             </span>
             <h3>{s.name}</h3>
             <p>{s.text}</p>
@@ -70,7 +77,7 @@ const t = content[lang];
   </section>
 
   <section class="block contact" id="kontakt" aria-labelledby="kontakt-h">
-    <div class="wrap"><div class="panel split">
+    <div class="wrap"><div class="panel glass split">
       <div>
         <h2 id="kontakt-h">{t.contact.title}</h2>
         <p class="intro">{t.contact.lead}</p>

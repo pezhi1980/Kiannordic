@@ -9,7 +9,7 @@ export const content = {
     },
     nav: { services: 'Ydelser', process: 'Proces', contact: 'Kontakt', switchLabel: 'English', switchShort: 'EN' },
     hero: {
-      title: 'Fra idé til app. Bygget med AI.',
+      title: 'Intelligente apps, bygget med nordisk præcision.',
       lead:
         'Vi er et dansk studie, der bruger AI til at bygge mobilapps, agenter og værktøjer hurtigere end traditionel udvikling, uden at gå på kompromis med kvalitet eller dine data.',
       primary: 'Start et projekt',
@@ -18,22 +18,25 @@ export const content = {
     services: {
       title: 'Det bygger vi',
       items: [
-        {
-          name: 'Apps med AI',
-          text: 'Mobil- og webapps, hvor AI gør det tunge arbejde: genkender billeder, forstår tekst, oversætter og foreslår næste skridt.',
-          tags: ['iOS og Android', 'Web', 'Flutter', 'Unity'],
-        },
-        {
-          name: 'AI-agenter og automatisering',
-          text: 'Agenter, der læser tickets, sorterer henvendelser og udfylder systemer for jer. De kan køre lokalt, så følsomme data bliver i huset.',
-          tags: ['Lokale modeller', 'Integrationer', 'Workflows'],
-        },
-        {
-          name: 'Skræddersyede værktøjer',
-          text: 'Interne værktøjer, dashboards og hjemmesider, der passer til den måde, I faktisk arbejder på.',
-          tags: ['Dashboards', 'Hjemmesider', 'Interne systemer'],
-        },
+        { icon: 'app', name: 'App-udvikling', text: 'Mobil- og webapps med AI indbygget fra start: fra første prototype til lancering i App Store og Google Play.', tags: ['iOS og Android', 'Web', 'Flutter', 'Unity'] },
+        { icon: 'llm', name: 'Sprogmodeller', text: 'Chat, søgning og tekstforståelse bygget på store sprogmodeller, tilpasset jeres egne data og jeres sprog.', tags: ['LLM', 'RAG', 'Oversættelse'] },
+        { icon: 'vision', name: 'Billedgenkendelse', text: 'Computer vision, der læser kvitteringer, genkender objekter og forvandler billeder til strukturerede data.', tags: ['Computer vision', 'OCR', 'Klassificering'] },
+        { icon: 'agent', name: 'AI-agenter og automatisering', text: 'Agenter, der læser tickets, sorterer henvendelser og udfylder systemer for jer. De kan køre lokalt, så følsomme data bliver i huset.', tags: ['Lokale modeller', 'Integrationer', 'Workflows'] },
       ],
+    },
+    demo: {
+      title: 'Prøv det selv',
+      lead: 'Tre små eksempler på, hvad AI kan gøre med tekst. Ret i teksten, og kør igen.',
+      run: 'Kør',
+      running: 'Kører…',
+      input: 'Input',
+      output: 'Output',
+      note: 'Demo: kører lokalt i din browser med regelbaserede modeller. Intet sendes nogen steder.',
+      modes: {
+        receipt: { label: 'Kvittering', sample: 'Mælk 1L 12,95\nRugbrød 24,00\nBananer 18,50\nKaffe 45,00\nShampoo 39,95\nOpvaskemiddel 22,00' },
+        entities: { label: 'Udtræk aftale', sample: 'Hej! Kan vi mødes tirsdag d. 4. november kl. 14:30 og tale om appen? Ring på 22 33 44 55 eller skriv til anna@firma.dk' },
+        sentiment: { label: 'Stemning', sample: 'Appen er virkelig hurtig og nem at bruge, men login fejler nogle gange, og det er frustrerende.' },
+      },
     },
     process: {
       title: 'Sådan arbejder vi',
@@ -74,7 +77,7 @@ export const content = {
     },
     nav: { services: 'Services', process: 'Process', contact: 'Contact', switchLabel: 'Dansk', switchShort: 'DA' },
     hero: {
-      title: 'From idea to app. Built with AI.',
+      title: 'Engineering intelligent apps with Nordic precision.',
       lead:
         'We are a Danish studio using AI to build mobile apps, agents and tools faster than traditional development, without compromising on quality or your data.',
       primary: 'Start a project',
@@ -83,22 +86,25 @@ export const content = {
     services: {
       title: 'What we build',
       items: [
-        {
-          name: 'AI-powered apps',
-          text: 'Mobile and web apps where AI does the heavy lifting: recognising images, understanding text, translating and suggesting next steps.',
-          tags: ['iOS and Android', 'Web', 'Flutter', 'Unity'],
-        },
-        {
-          name: 'AI agents and automation',
-          text: 'Agents that read tickets, sort requests and fill in systems for you. They can run locally, so sensitive data stays in-house.',
-          tags: ['Local models', 'Integrations', 'Workflows'],
-        },
-        {
-          name: 'Custom tools',
-          text: 'Internal tools, dashboards and websites that fit the way your team actually works.',
-          tags: ['Dashboards', 'Websites', 'Internal systems'],
-        },
+        { icon: 'app', name: 'App development', text: 'Mobile and web apps with AI built in from day one: from the first prototype to launch on the App Store and Google Play.', tags: ['iOS and Android', 'Web', 'Flutter', 'Unity'] },
+        { icon: 'llm', name: 'Language models', text: 'Chat, search and text understanding built on large language models, adapted to your own data and language.', tags: ['LLM', 'RAG', 'Translation'] },
+        { icon: 'vision', name: 'Computer vision', text: 'Vision models that read receipts, recognise objects and turn images into structured data.', tags: ['Computer vision', 'OCR', 'Classification'] },
+        { icon: 'agent', name: 'AI agents and automation', text: 'Agents that read tickets, sort requests and fill in systems for you. They can run locally, so sensitive data stays in-house.', tags: ['Local models', 'Integrations', 'Workflows'] },
       ],
+    },
+    demo: {
+      title: 'Try it yourself',
+      lead: 'Three small examples of what AI can do with text. Edit the text and run it again.',
+      run: 'Run',
+      running: 'Running…',
+      input: 'Input',
+      output: 'Output',
+      note: 'Demo: runs locally in your browser with rule-based models. Nothing is sent anywhere.',
+      modes: {
+        receipt: { label: 'Receipt', sample: 'Milk 1L 12.95\nRye bread 24.00\nBananas 18.50\nCoffee 45.00\nShampoo 39.95\nDish soap 22.00' },
+        entities: { label: 'Extract meeting', sample: 'Hi! Can we meet on Tuesday 4 November at 14:30 to talk about the app? Call +45 22 33 44 55 or email anna@company.com' },
+        sentiment: { label: 'Sentiment', sample: 'The app is really fast and easy to use, but login sometimes fails and that is frustrating.' },
+      },
     },
     process: {
       title: 'How we work',

@@ -1,0 +1,170 @@
+---
+// Interaktiv AI-demo: tre små regelbaserede "modeller", der kører helt i browseren.
+// Ingen netværkskald. Output streames som JSON for at vise, hvordan AI-output ser ud.
+import { content, type Lang } from '../i18n/content';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = content[lang].demo;
+const modes = Object.entries(d.modes) as [string, { label: string; sample: string }][];
+---
+<div class="demo glass" data-lang={lang} data-run={d.run} data-running={d.running}>
+  <div class="demo-head">
+    <p class="demo-title">{d.title}</p>
+    <div class="tabs" role="tablist" aria-label={d.title}>
+      {modes.map(([key, m], i) => (
+        <button type="button" role="tab" class="tab" id={`tab-${key}`} aria-selected={i === 0 ? 'true' : 'false'} data-mode={key} data-sample={m.sample}>{m.label}</button>
+      ))}
+    </div>
+  </div>
+  <p class="demo-lead">{d.lead}</p>
+  <label class="demo-label" for="demo-input">{d.input}</label>
+  <textarea id="demo-input" class="demo-input" spellcheck="false" rows="5">{modes[0][1].sample}</textarea>
+  <div class="demo-actions">
+    <button type="button" class="btn btn-primary demo-run">{d.run}</button>
+  </div>
+  <p class="demo-label" id="demo-out-label">{d.output}</p>
+  <pre class="demo-output" aria-live="polite" aria-labelledby="demo-out-label"><code></code></pre>
+  <p class="demo-note">{d.note}</p>
+</div>
+
+<script>
+  type Lang = 'da' | 'en';
+  const root = document.querySelector<HTMLElement>('.demo');
+  if (root) {
+    const lang = (root.dataset.lang as Lang) || 'da';
+    const input = root.querySelector<HTMLTextAreaElement>('.demo-input')!;
+    const out = root.querySelector<HTMLElement>('.demo-output code')!;
+    const runBtn = root.querySelector<HTMLButtonElement>('.demo-run')!;
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('.tab'));
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let mode = tabs[0]?.dataset.mode || 'receipt';
+    let streamId = 0;
+
+    const L = (da: string, en: string) => (lang === 'da' ? da : en);
+    const num = (s: string) => parseFloat(s.replace(/\s/g, '').replace(',', '.'));
+    const round = (n: number) => Math.round(n * 100) / 100;
+
+    // 1) Kvittering → kategorier
+    const CATS: [string, string, RegExp][] = [
+      ['Mejeri', 'Dairy', /mælk|ost|yoghurt|smør|fløde|skyr|milk|cheese|butter|cream/i],
+      ['Bageri', 'Bakery', /brød|bolle|rugbrød|kage|bread|bun|cake|croissant/i],
+      ['Frugt og grønt', 'Fruit and veg', /banan|æble|pære|tomat|agurk|gulerod|kartof|salat|banana|apple|pear|tomato|cucumber|carrot|potato|lettuce/i],
+      ['Drikkevarer', 'Drinks', /kaffe|te\b|juice|sodavand|vand|øl|vin|coffee|tea\b|soda|water|beer|wine/i],
+      ['Kød og fisk', 'Meat and fish', /kylling|hakket|bøf|laks|fisk|pølse|chicken|beef|salmon|fish|sausage/i],
+      ['Personlig pleje', 'Personal care', /shampoo|tandpasta|sæbe|deodorant|balsam|toothpaste|soap|conditioner/i],
+      ['Husholdning', 'Household', /opvask|vaskemiddel|køkkenrulle|toiletpapir|rengøring|dish|detergent|paper towel|toilet paper|cleaner/i],
+    ];
+    const receipt = (text: string) => {
+      const items: { name: string; price: number; category: string }[] = [];
+      for (const raw of text.split('\n')) {
+        const line = raw.trim();
+        const m = line.match(/^(.*?)\s+(\d[\d\s]*[.,]\d{2})\s*(kr\.?|dkk)?$/i);
+        if (!m) continue;
+        const name = m[1].replace(/\s+\d+([.,]\d+)?\s*(l|kg|g|ml|stk)\b/i, '').trim();
+        const hit = CATS.find(([, , re]) => re.test(name));
+        items.push({ name, price: num(m[2]), category: hit ? L(hit[0], hit[1]) : L('Andet', 'Other') });
+      }
+      const per: Record<string, number> = {};
+      for (const it of items) per[it.category] = round((per[it.category] || 0) + it.price);
+      return {
+        [L('varer', 'items')]: items.map((i) => ({ [L('navn', 'name')]: i.name, [L('pris', 'price')]: i.price, [L('kategori', 'category')]: i.category })),
+        [L('pr_kategori', 'by_category')]: per,
+        [L('total', 'total')]: round(items.reduce((s, i) => s + i.price, 0)),
+        [L('valuta', 'currency')]: 'DKK',
+      };
+    };
+
+    // 2) Tekst → aftale (entity extraction)
+    const MONTHS = 'januar|februar|marts|april|maj|juni|juli|august|september|oktober|november|december|january|february|march|may|june|july|october';
+    const DAYS = 'mandag|tirsdag|onsdag|torsdag|fredag|lørdag|søndag|monday|tuesday|wednesday|thursday|friday|saturday|sunday';
+    const entities = (text: string) => {
+      const email = text.match(/[\w.+-]+@[\w-]+\.[\w.]+/)?.[0] ?? null;
+      const phone = text.match(/(\+\d{2}\s?)?\b\d{2}\s?\d{2}\s?\d{2}\s?\d{2}\b/)?.[0]?.trim() ?? null;
+      const time = text.match(/\b(?:kl\.?\s*|at\s+)?([01]?\d|2[0-3])[:.]([0-5]\d)\b/i);
+      const date = text.match(new RegExp(`\\b(\\d{1,2})\\.?\\s+(${MONTHS})\\b`, 'i'));
+      const day = text.match(new RegExp(`\\b(${DAYS})\\b`, 'i'))?.[1]?.toLowerCase() ?? null;
+      const meeting = /mødes|møde|meet|meeting|samtale|call/i.test(text);
+      const topic = text.match(/(?:om|about)\s+([^?.!,]+)/i)?.[1]?.trim() ?? null;
+      return {
+        [L('hensigt', 'intent')]: meeting ? L('mødeforespørgsel', 'meeting_request') : L('ukendt', 'unknown'),
+        [L('ugedag', 'weekday')]: day,
+        [L('dato', 'date')]: date ? (lang === 'da' ? `${date[1]}. ${date[2].toLowerCase()}` : `${date[1]} ${date[2][0].toUpperCase()}${date[2].slice(1).toLowerCase()}`) : null,
+        [L('tid', 'time')]: time ? `${time[1].padStart(2, '0')}:${time[2]}` : null,
+        [L('emne', 'topic')]: topic,
+        [L('kontakt', 'contact')]: { [L('telefon', 'phone')]: phone, email },
+      };
+    };
+
+    // 3) Tekst → stemning (sentiment)
+    const POS = /^(hurtig|nem|god|godt|super|fantastisk|elsker|glad|tilfreds|smuk|enkel|stabil|fast|easy|good|great|love|happy|beautiful|simple|stable|excellent|awesome)/i;
+    const NEG = /^(langsom|svær|dårlig|fejl|fejler|irriterende|frustrerende|crash|ustabil|grim|hader|slow|hard|bad|fails?|annoying|frustrating|crashes|unstable|ugly|hate|broken)/i;
+    const NEGATE = /^(ikke|aldrig|not|never|no)$/i;
+    const sentiment = (text: string) => {
+      const words = text.toLowerCase().match(/[\p{L}']+/gu) || [];
+      const pos: string[] = [], neg: string[] = [];
+      words.forEach((w, i) => {
+        const flip = i > 0 && NEGATE.test(words[i - 1]);
+        if (POS.test(w)) (flip ? neg : pos).push(flip ? `${words[i - 1]} ${w}` : w);
+        else if (NEG.test(w)) (flip ? pos : neg).push(flip ? `${words[i - 1]} ${w}` : w);
+      });
+      const total = pos.length + neg.length;
+      const score = total ? round((pos.length - neg.length) / total) : 0;
+      const label = !total ? L('neutral', 'neutral')
+        : pos.length && neg.length ? L('blandet', 'mixed')
+        : score > 0 ? L('positiv', 'positive') : L('negativ', 'negative');
+      return {
+        [L('stemning', 'sentiment')]: label,
+        score,
+        [L('signaler', 'signals')]: { [L('positive', 'positive')]: pos, [L('negative', 'negative')]: neg },
+        [L('forslag', 'suggestion')]: neg.length ? L('Undersøg det negative først: ', 'Look into the negative first: ') + neg.join(', ') : L('Intet at handle på.', 'Nothing to act on.'),
+      };
+    };
+
+    const models: Record<string, (t: string) => unknown> = { receipt, entities, sentiment };
+
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const highlight = (json: string) =>
+      esc(json)
+        .replace(/("(?:[^"\\]|\\.)*")(\s*:)/g, '<span class="k">$1</span>$2')
+        .replace(/:\s*("(?:[^"\\]|\\.)*")/g, ': <span class="s">$1</span>')
+        .replace(/(^|[\[,\s])("(?:[^"\\]|\\.)*")(?=\s*[,\]\n])/g, '$1<span class="s">$2</span>')
+        .replace(/:\s*(-?\d+(?:\.\d+)?)/g, ': <span class="n">$1</span>')
+        .replace(/:\s*(null)/g, ': <span class="z">$1</span>');
+
+    const run = () => {
+      const id = ++streamId;
+      const json = JSON.stringify(models[mode](input.value), null, 2);
+      runBtn.disabled = true;
+      runBtn.textContent = root.dataset.running || '';
+      out.parentElement!.classList.add('streaming');
+      const finish = () => {
+        out.innerHTML = highlight(json);
+        out.parentElement!.classList.remove('streaming');
+        runBtn.disabled = false;
+        runBtn.textContent = root.dataset.run || '';
+      };
+      if (reduce.matches) return finish();
+      let i = 0;
+      const tick = () => {
+        if (id !== streamId) return;
+        i = Math.min(json.length, i + 14);
+        out.textContent = json.slice(0, i);
+        if (i < json.length) requestAnimationFrame(tick); else finish();
+      };
+      out.textContent = '';
+      setTimeout(tick, 280);
+    };
+
+    tabs.forEach((tab) => tab.addEventListener('click', () => {
+      tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+      mode = tab.dataset.mode || 'receipt';
+      input.value = (tab.dataset.sample || '').replace(/\\n/g, '\n');
+      run();
+    }));
+    runBtn.addEventListener('click', run);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) run(); });
+
+    input.value = input.value.replace(/\\n/g, '\n');
+    new IntersectionObserver(([e], obs) => { if (e.isIntersecting) { run(); obs.disconnect(); } }).observe(root);
+  }
+</script>

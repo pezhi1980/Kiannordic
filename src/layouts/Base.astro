@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { content, paths, type Lang } from '../i18n/content';
 import { company } from '../config';
+import Logo from '../components/Logo.astro';
 
 interface Props {
   lang: Lang;
@@ -53,8 +54,7 @@ const year = new Date().getFullYear();
     <header class="site-header">
       <div class="wrap">
         <a class="brand" href={home} aria-label={company.name}>
-          <svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="kn-aurora" x1="0" x2="1"><stop offset="0" stop-color="#06b6d4"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs><path d="M7 17a9 9 0 0 1 18 0z" fill="currentColor"/><rect x="3" y="18.5" width="26" height="2.2" rx="1.1" fill="url(#kn-aurora)"/><rect x="8" y="23" width="16" height="1.6" rx=".8" fill="#06b6d4" opacity=".6"/></svg>
-          {company.name}
+          <Logo id="logo-head" />
         </a>
         <nav class="nav" aria-label={lang === 'da' ? 'Hovedmenu' : 'Main menu'}>
           <a class="section-link" href={anchor('ydelser')}>{t.nav.services}</a>
@@ -69,7 +69,7 @@ const year = new Date().getFullYear();
     </main>
     <footer class="site-footer">
       <div class="wrap">
-        <span>© {year} {company.name}, {company.country[lang]}</span>
+        <span class="foot-brand"><Logo id="logo-foot" /><span>© {year} {company.name}, {company.country[lang]}</span></span>
         <ul>
           {company.cvr && <li>{t.footer.cvr} {company.cvr}</li>}
           <li><a href={`mailto:${company.email}`}>{company.email}</a></li>
