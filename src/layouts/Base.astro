@@ -59,7 +59,6 @@ const year = new Date().getFullYear();
         </a>
         <nav class="nav" aria-label={lang === 'da' ? 'Hovedmenu' : 'Main menu'}>
           <a class="section-link" href={anchor('ydelser')}>{t.nav.services}</a>
-          <a class="section-link" href={anchor('projekter')}>{t.nav.projects}</a>
           <a class="section-link" href={anchor('proces')}>{t.nav.process}</a>
           <a class="section-link" href={anchor('kontakt')}>{t.nav.contact}</a>
           <a class="lang" href={paths[other][page]} hreflang={other} lang={other} aria-label={t.nav.switchLabel}>{t.nav.switchShort}</a>

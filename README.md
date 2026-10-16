@@ -15,7 +15,7 @@ npm run build    # output i dist/
 | Hvad | Fil |
 |---|---|
 | E-mail, CVR-nr. | `src/config.ts` |
-| Al tekst (DA + EN), ydelser, projekter | `src/i18n/content.ts` |
+| Al tekst (DA + EN), ydelser | `src/i18n/content.ts` |
 | Farver, typografi, layout | `src/styles/global.css` |
 | Privatlivspolitik | `src/components/Privacy.astro` |
 | Fjord-animationen i toppen | `src/components/Fjord.astro` |

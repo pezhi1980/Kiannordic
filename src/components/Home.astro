@@ -15,7 +15,7 @@ const t = content[lang];
       <p class="lead">{t.hero.lead}</p>
       <div class="actions">
         <a class="btn btn-primary" href="#kontakt">{t.hero.primary}</a>
-        <a class="btn btn-ghost" href="#projekter">{t.hero.secondary}</a>
+        <a class="btn btn-ghost" href="#ydelser">{t.hero.secondary}</a>
       </div>
     </div>
     <Fjord />
@@ -38,23 +38,6 @@ const t = content[lang];
     </div>
   </section>
 
-  <section class="block" id="projekter" aria-labelledby="projekter-h">
-    <div class="wrap">
-      <h2 id="projekter-h">{t.projects.title}</h2>
-      <p class="intro">{t.projects.lead}</p>
-      <ul class="projects">
-        {t.projects.items.map((p) => (
-          <li>
-            <div class="head">
-              <h3>{p.name}</h3>
-              <span class="status">{p.status}</span>
-            </div>
-            <p>{p.text}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
 
   <section class="block" id="proces" aria-labelledby="proces-h">
     <div class="wrap">

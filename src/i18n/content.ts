@@ -7,13 +7,13 @@ export const content = {
       description:
         'Kian Nordic er et dansk studie, der bygger mobilapps, AI-agenter og skræddersyede værktøjer med AI. Fra idé til lancering, hurtigt og med styr på dine data.',
     },
-    nav: { services: 'Ydelser', projects: 'Projekter', process: 'Proces', contact: 'Kontakt', switchLabel: 'English', switchShort: 'EN' },
+    nav: { services: 'Ydelser', process: 'Proces', contact: 'Kontakt', switchLabel: 'English', switchShort: 'EN' },
     hero: {
       title: 'Fra idé til app. Bygget med AI.',
       lead:
         'Vi er et dansk studie, der bruger AI til at bygge mobilapps, agenter og værktøjer hurtigere end traditionel udvikling, uden at gå på kompromis med kvalitet eller dine data.',
       primary: 'Start et projekt',
-      secondary: 'Se vores projekter',
+      secondary: 'Se hvad vi bygger',
     },
     services: {
       title: 'Det bygger vi',
@@ -33,16 +33,6 @@ export const content = {
           text: 'Interne værktøjer, dashboards og hjemmesider, der passer til den måde, I faktisk arbejder på.',
           tags: ['Dashboards', 'Hjemmesider', 'Interne systemer'],
         },
-      ],
-    },
-    projects: {
-      title: 'Egne produkter',
-      lead: 'Vi bygger også vores egne apps. Det er her, vi afprøver idéerne først.',
-      items: [
-        { name: 'Kvit', text: 'Tag et billede af kvitteringen, og appen sorterer varerne og viser, hvad du bruger hver uge og måned.', status: 'Under udvikling' },
-        { name: 'Daypaint', text: 'Tryk på hver time i døgnet og se, hvordan du faktisk bruger din tid, uge for uge og år for år.', status: 'Under udvikling' },
-        { name: 'Foldmeet', text: 'Et puslespil, hvor du folder papiret, så to figurer mødes.', status: 'Under udvikling' },
-        { name: 'Hytte Hygge', text: 'Klassiske nordiske bræt- og kortspil online for 2–4 spillere.', status: 'Under udvikling' },
       ],
     },
     process: {
@@ -82,13 +72,13 @@ export const content = {
       description:
         'Kian Nordic is a Danish studio building mobile apps, AI agents and custom tools with AI. From idea to launch, fast and with your data under control.',
     },
-    nav: { services: 'Services', projects: 'Projects', process: 'Process', contact: 'Contact', switchLabel: 'Dansk', switchShort: 'DA' },
+    nav: { services: 'Services', process: 'Process', contact: 'Contact', switchLabel: 'Dansk', switchShort: 'DA' },
     hero: {
       title: 'From idea to app. Built with AI.',
       lead:
         'We are a Danish studio using AI to build mobile apps, agents and tools faster than traditional development, without compromising on quality or your data.',
       primary: 'Start a project',
-      secondary: 'See our projects',
+      secondary: 'See what we build',
     },
     services: {
       title: 'What we build',
@@ -108,16 +98,6 @@ export const content = {
           text: 'Internal tools, dashboards and websites that fit the way your team actually works.',
           tags: ['Dashboards', 'Websites', 'Internal systems'],
         },
-      ],
-    },
-    projects: {
-      title: 'Our own products',
-      lead: 'We build our own apps too. That is where we try ideas out first.',
-      items: [
-        { name: 'Kvit', text: 'Snap a photo of a receipt and the app sorts the items and shows what you spend each week and month.', status: 'In development' },
-        { name: 'Daypaint', text: 'Tap each hour of the day and see how you really spend your time, week by week and year by year.', status: 'In development' },
-        { name: 'Foldmeet', text: 'A puzzle game where you fold the paper so two figures meet.', status: 'In development' },
-        { name: 'Hytte Hygge', text: 'Classic Nordic board and card games online for 2–4 players.', status: 'In development' },
       ],
     },
     process: {

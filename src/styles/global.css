@@ -102,16 +102,6 @@ section.block { padding: clamp(4rem, 10vh, 7rem) 0; border-top: 1px solid var(--
 .tags li { font-size: .85rem; color: var(--ink-soft); background: var(--paper-2); padding: .15rem .6rem; border-radius: 999px; }
 @media (max-width: 640px) { .rows > li { grid-template-columns: 1fr; } }
 
-/* Projects */
-.projects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(1.5rem, 4vw, 3rem); list-style: none; margin: 0; padding: 0; }
-.projects li { padding: 1.4rem 0; border-top: 1.5px solid var(--ink); }
-.projects .head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
-.projects h3 { margin: 0 0 .4rem; font-size: 1.5rem; letter-spacing: -0.02em; }
-.status { font-size: .85rem; color: var(--ink-soft); white-space: nowrap; }
-.status::before { content: ''; display: inline-block; width: .5em; height: .5em; border-radius: 50%; background: var(--pine); margin-right: .45em; vertical-align: .08em; }
-.projects p { margin: 0; color: var(--ink-soft); max-width: 48ch; }
-@media (max-width: 640px) { .projects { grid-template-columns: 1fr; } }
-
 /* Process: a real sequence, so numbered */
 .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(1rem, 3vw, 2rem); list-style: none; margin: 0; padding: 0; counter-reset: step; margin-top: 2.5rem; }
 .steps li { counter-increment: step; position: relative; padding-top: 3.2rem; }
